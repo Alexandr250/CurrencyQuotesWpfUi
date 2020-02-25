@@ -1,0 +1,266 @@
+﻿<Window x:Class="CurrencyQuotesWpfUi.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:main="clr-namespace:CurrencyQuotesWpfUi"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="500" Width="450">
+    <Window.DataContext>
+        <main:MainViewModel></main:MainViewModel>
+    </Window.DataContext>
+    <Window.Resources>
+        <Style x:Key="UpdateButtonStyle" TargetType="Button">
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Name="border" BorderThickness="1" BorderBrush="#FFCFCFCF" CornerRadius="0">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Color="White" Offset="0.0"/>
+                                    <GradientStop Color="#FFE5E5E5" Offset="0.5"/>
+                                    <GradientStop Color="#FFE8E8E8" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" TargetName="border">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1" >
+                                            <GradientStop Color="#FFEAF4FF" Offset="0.0"/>
+                                            <GradientStop Color="#FFD6E9FF" Offset="0.5"/>
+                                            <GradientStop Color="#FFD0E0FD" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="BorderBrush" TargetName="border" Value="#FF8EAEE8" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="{x:Type TabItem}">
+            <Setter Property="SnapsToDevicePixels" Value="True"></Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TabItem}">
+                        <Grid>
+                            <Border Name="Border" Margin="0,0,0,0" Padding="10" BorderBrush="#FFB7B7B7" BorderThickness="0,1,1,0" CornerRadius="0,0,0,0" >
+                                <Grid>
+                                    <ContentPresenter x:Name="ContentSite" VerticalAlignment="Stretch" HorizontalAlignment="Center" ContentSource="Header" Margin="0" RecognizesAccessKey="True" />
+                                </Grid>
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1" >
+                                        <GradientStop Color="#FFEAF4FF" Offset="0.0"/>
+                                        <GradientStop Color="#FFD6E9FF" Offset="0.5"/>
+                                        <GradientStop Color="#FFD0E0FD" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Panel.ZIndex" Value="100" />
+                                <Setter TargetName="Border" Property="Background" Value="White" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="{x:Type TabControl}">
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Template" >
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabControl">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" BorderThickness="0,0,0,1" Margin="0,0,0,5" BorderBrush="#FFB7B7B7">
+                                <TabPanel IsItemsHost="True"/>
+                            </Border>
+                            <Border Grid.Row="1" BorderBrush="#FFB7B7B7" BorderThickness="0" CornerRadius="0" Margin="0,0,0,0" Background="#FFFAFAFA" SnapsToDevicePixels="True">
+                                <ContentPresenter ContentSource="SelectedContent" HorizontalAlignment="Stretch"/>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <UniformGrid Columns="2" Margin="0">
+            <FrameworkElement x:Name="UniformGrid"/>
+        </UniformGrid>
+        <TabControl>
+            <TabItem Header="Котировки" Width="{Binding ElementName=UniformGrid, Path=ActualWidth}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="auto"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Button Grid.Row="0" Margin="5" Height="32" Style="{StaticResource UpdateButtonStyle}" Command="{Binding UpdateCommand}">Обновить</Button>
+                    <ListView Grid.Row="1" Margin="5,0" ItemsSource="{Binding Currencies}" SelectionMode="Single" >
+                        <ListView.Template>
+                            <ControlTemplate>
+                                <Border BorderBrush="#FFCFCFCF" BorderThickness="1">
+                                    <ScrollViewer Focusable="False">
+                                        <ItemsPresenter Margin="0"></ItemsPresenter>
+                                    </ScrollViewer>
+                                </Border>
+                            </ControlTemplate>
+                        </ListView.Template>
+                        <ListView.Resources>
+                            <ControlTemplate x:Key="SelectedTemplate" TargetType="ListViewItem">
+                                <Border Background="#FFE2F3FE"  BorderThickness="0,0,0,1" Margin="0,0,0,0">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="auto"></RowDefinition>
+                                            <RowDefinition Height="auto"></RowDefinition>
+                                        </Grid.RowDefinitions>
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="auto"></ColumnDefinition>
+                                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0">
+                                                <Label Content="{Binding Designation}" Padding="5,10,5,10" Width="40" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                                            </StackPanel>
+                                            <Label Grid.Column="1" Content="{Binding Name}" Padding="5" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" />
+                                        </Grid>
+                                        <Border Grid.Row="1" Background="#aaffffff" BorderBrush="#22000000" BorderThickness="0,1,0,1">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="auto"></RowDefinition>
+                                                    <RowDefinition Height="auto"></RowDefinition>
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                                </Grid.ColumnDefinitions>
+                                                <Label Grid.Row="0" Content="Курс к рублю:" Padding="9,3" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" />
+                                                <Label Grid.Row="1" Content="Курс к доллару:" Padding="9,3" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" />
+                                                <Label Grid.Row="0" Grid.Column="1" Content="{Binding Value}" Padding="5,3" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" />
+                                                <Label Grid.Row="1" Grid.Column="1" Content="{Binding ExchangeRateToConvertable}" Padding="5,3,5,10" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" />
+                                            </Grid>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </ControlTemplate>
+                            <Style TargetType="{x:Type ListViewItem}">
+                                <Setter Property="Template" x:Name="q">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type ListViewItem}">
+                                            <Border BorderBrush="#FFD4D4D4" BorderThickness="0,0,0,1" Margin="0,0,0,0">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                                    </Grid.ColumnDefinitions>
+                                                    <StackPanel Grid.Column="0">
+                                                        <Label Content="{Binding Designation}" Padding="5,10,5,10" Width="40" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                                                    </StackPanel>
+                                                    <Label Grid.Column="1" Content="{Binding Name}" Padding="5" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" />
+                                                </Grid>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <MultiTrigger>
+                                        <MultiTrigger.Conditions>
+                                            <Condition Property="IsSelected" Value="true" />
+                                        </MultiTrigger.Conditions>
+                                        <Setter Property="Template" Value="{StaticResource SelectedTemplate}" />
+                                    </MultiTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ListView.Resources>
+                    </ListView>
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Margin="5,8,5,8" CornerRadius="0" BorderThickness="1" BorderBrush="#FFCFCFCF">
+                            <Grid>
+                                <TextBox x:Name="textBoxFilter" Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}" Padding="5" BorderBrush="{x:Null}" HorizontalContentAlignment="Center"></TextBox>
+                                <Label IsHitTestVisible="False" Content="Поиск..." Foreground="#379" VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
+                                    <Label.Style>
+                                        <Style TargetType="{x:Type Label}">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding ElementName=textBoxFilter, Path=Text}" Value="" />
+                                                        <Condition Binding="{Binding ElementName=textBoxFilter, Path=IsKeyboardFocused}" Value="False" />
+                                                    </MultiDataTrigger.Conditions>
+                                                    <MultiDataTrigger.Setters>
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </MultiDataTrigger.Setters>
+                                                </MultiDataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Label.Style>
+                                </Label>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Конвертер" Width="{Binding ElementName=UniformGrid, Path=ActualWidth}">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"></RowDefinition>
+                        <RowDefinition Height="auto"></RowDefinition>
+                        <RowDefinition Height="auto"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Margin="5" Content="Конвертировать"/>
+                    <ComboBox Grid.Row="1" Grid.Column="0" Height="35" Margin="5" ItemsSource="{Binding Currencies}" SelectedItem="{Binding SelectedCurrencyFrom}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Grid.Column="0" Content="{Binding Designation}" />
+                                    <Label Grid.Column="1" Content="{Binding Name}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ComboBox>
+                    <ComboBox Grid.Row="2" Grid.Column="0" Height="35" Margin="5" ItemsSource="{Binding Currencies}" SelectedItem="{Binding SelectedCurrencyTo}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Grid.Column="0" Content="{Binding Designation}" />
+                                    <Label Grid.Column="1" Content="{Binding Name}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ComboBox>
+                    <TextBox Grid.Row="1" Grid.Column="1" Height="35" Margin="5" Text="{Binding ValueFrom, UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
+                    <Label Grid.Row="2" Grid.Column="1" Height="35" Margin="5" Content="{Binding ConvertResult}" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Background="White" BorderBrush="#FFACACAC" BorderThickness="1"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+    </Grid>
+</Window>
