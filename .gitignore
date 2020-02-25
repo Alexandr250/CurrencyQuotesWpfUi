@@ -3,3 +3,6 @@
 ################################################################################
 
 /.vs/CurrencyQuotesWpfUi/v15/Server/sqlite3
+/CurrencyQuotesWpfUi/bin/Debug
+/CurrencyQuotesWpfUi/obj/Debug
+/.vs/CurrencyQuotesWpfUi/v15

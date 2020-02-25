@@ -33,7 +33,8 @@ namespace CurrencyQuotesWpfUi
         public ICommand UpdateCommand { get; }
 
         public MainViewModel() {
-            _repository = new ExchangeRatesLocalRepository(new System.IO.FileInfo("daily.json"));
+            //_repository = new ExchangeRatesLocalRepository(new System.IO.FileInfo("daily.json"));
+            _repository = new ExchangeRatesRepository("https://www.cbr-xml-daily.ru/daily_json.js");
             UpdateCommand = new ReloadCurrenciesCommand(_repository);
         }
 
